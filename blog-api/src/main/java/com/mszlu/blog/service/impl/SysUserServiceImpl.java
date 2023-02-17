@@ -35,7 +35,8 @@ public class SysUserServiceImpl implements SysUserService {
         if (sysUser == null) {
             sysUser = new SysUser();
             sysUser.setId(1L);
-            sysUser.setAvatar("/static/img/logo.b3a48c0.png");
+            //sysUser.setAvatar("/static/img/logo.b3a48c0.png");
+            sysUser.setAvatar("/static/img/f.jpg");
             sysUser.setNickname("sfChampion");
         }
         UserVo userVo = new UserVo();

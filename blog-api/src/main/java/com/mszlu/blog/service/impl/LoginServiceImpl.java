@@ -112,7 +112,8 @@ public class LoginServiceImpl implements LoginService {
         sysUser.setPassword(DigestUtils.md5Hex(password + slat));
         sysUser.setCreateDate(System.currentTimeMillis());
         sysUser.setLastLogin(System.currentTimeMillis());
-        sysUser.setAvatar("/static/img/logo.b3a48c0.png");
+        //sysUser.setAvatar("/static/img/logo.b3a48c0.png");
+        sysUser.setAvatar("/static/img/f.jpg");
         sysUser.setAdmin(1); // 1 为true
         sysUser.setDeleted(0); // 0 为false
         sysUser.setSalt("");
