@@ -1,11 +1,15 @@
 package com.mszlu.blog.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.mszlu.blog.dao.mapper.LoginMapper;
 import com.mszlu.blog.dao.pojo.SysUser;
 import com.mszlu.blog.service.LoginService;
 import com.mszlu.blog.service.SysUserService;
+import com.mszlu.blog.utils.BlogException;
 import com.mszlu.blog.utils.JWTUtils;
-import com.mszlu.blog.vo.ErrorCode;
+import com.mszlu.blog.vo.ResultCode;
+import com.mszlu.blog.vo.LoginVo;
 import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.params.LoginParam;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -48,12 +53,12 @@ public class LoginServiceImpl implements LoginService {
         String account = loginParam.getAccount();
         String password = loginParam.getPassword();
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
-            return Result.fail(ErrorCode.PARAMS_ERROR.getCode(), ErrorCode.PARAMS_ERROR.getMsg());
+            return Result.fail(ResultCode.PARAMS_ERROR.getCode(), ResultCode.PARAMS_ERROR.getMsg());
         }
         password = DigestUtils.md5Hex(password + slat);
         SysUser sysUser = sysUserService.findUser(account, password);
         if (sysUser == null) {
-            return Result.fail(ErrorCode.ACCOUNT_PWD_NOT_EXIST.getCode(), ErrorCode.ACCOUNT_PWD_NOT_EXIST.getMsg());
+            return Result.fail(ResultCode.ACCOUNT_PWD_NOT_EXIST.getCode(), ResultCode.ACCOUNT_PWD_NOT_EXIST.getMsg());
         }
         String token = JWTUtils.createToken(sysUser.getId());
         redisTemplate.opsForValue().set("TOKEN_" + token, JSON.toJSONString(sysUser), 1, TimeUnit.DAYS);
@@ -100,11 +105,11 @@ public class LoginServiceImpl implements LoginService {
                 || StringUtils.isBlank(password)
                 || StringUtils.isBlank(nickname)
         ) {
-            return Result.fail(ErrorCode.PARAMS_ERROR.getCode(), ErrorCode.PARAMS_ERROR.getMsg());
+            return Result.fail(ResultCode.PARAMS_ERROR.getCode(), ResultCode.PARAMS_ERROR.getMsg());
         }
         SysUser sysUser = sysUserService.findUserByAccount(account);
         if (sysUser != null) {
-            return Result.fail(ErrorCode.ACCOUNT_EXIST.getCode(), ErrorCode.ACCOUNT_EXIST.getMsg());
+            return Result.fail(ResultCode.ACCOUNT_EXIST.getCode(), ResultCode.ACCOUNT_EXIST.getMsg());
         }
         sysUser = new SysUser();
         sysUser.setNickname(nickname);
@@ -125,5 +130,64 @@ public class LoginServiceImpl implements LoginService {
         String token = JWTUtils.createToken(sysUser.getId());
         redisTemplate.opsForValue().set("TOKEN_" + token, JSON.toJSONString(sysUser), 1, TimeUnit.DAYS);
         return Result.success(token);
+    }
+
+
+    @Resource
+    private LoginMapper loginMapper;
+
+    @Override
+    public Map<String, Object> phoneLoginUser(LoginVo loginVo) {
+        // 从loginVo中获取输入的手机号和验证码
+        String mobilePhoneNumber = loginVo.getMobilePhoneNumber();
+        String code = loginVo.getCode();
+
+        // 判断手机号和验证码是否为空
+        if (StringUtils.isBlank(mobilePhoneNumber) || StringUtils.isBlank(code)) {
+            throw new BlogException(ResultCode.PARAMS_ERROR.getMsg(),ResultCode.PARAMS_ERROR.getCode());
+        }
+
+        // 判断手机验证码和输入的验证码是否一致
+        String redisCode = redisTemplate.opsForValue().get(mobilePhoneNumber);
+        if (!code.equals(redisCode)) {
+            throw  new BlogException(ResultCode.CODE_ERROR.getMsg(),ResultCode.CODE_ERROR.getCode());
+        }
+        SysUser sysUserPhone = null;
+        if (sysUserPhone == null) {
+            // 判断是否是第一次登录，根据手机号查询数据库，如果不存在相同手机号，就是第一次登录
+            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("mobile_phone_number", mobilePhoneNumber);
+            sysUserPhone = loginMapper.selectOne(queryWrapper);
+            // 第一次使用这个手机号登录
+            if (sysUserPhone == null) {
+                // 将用户信息添加到数据库
+                sysUserPhone = new SysUser();
+                sysUserPhone.setAccount(sysUserPhone.getMobilePhoneNumber().substring(7));
+                sysUserPhone.setMobilePhoneNumber(mobilePhoneNumber);
+                sysUserPhone.setAvatar("/static/img/f.jpg");
+                loginMapper.insert(sysUserPhone);
+            }
+        }
+
+        /*
+        * 不是第一次，直接登录
+        * 返回登录信息，返回登录用户名，返回token信息
+        * */
+        Map<String, Object> map = new HashMap<>();
+        String phoneNumber = sysUserPhone.getMobilePhoneNumber();
+        //if (StringUtils.isEmpty(phoneNumber)) {
+        //    phoneNumber = sysUserPhone.getMobilePhoneNumber().substring(7);
+        //}
+        //if (StringUtils.isEmpty(phoneNumber)) {
+        //    phoneNumber = sysUserPhone.getMobilePhoneNumber();
+        //}
+        map.put("phoneNumber", phoneNumber);
+        map.put("account", sysUserPhone.getMobilePhoneNumber().substring(7));
+        map.put("avatar", sysUserPhone.getAvatar());
+        // jwt生成token字符串
+        String token = JWTUtils.createToken(sysUserPhone.getMobilePhoneNumber());
+        redisTemplate.opsForValue().set("TOKEN_" + token, JSON.toJSONString(sysUserPhone), 1, TimeUnit.DAYS);
+        map.put("token",token);
+        return map;
     }
 }

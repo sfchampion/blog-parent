@@ -5,12 +5,10 @@ import com.mszlu.blog.dao.mapper.SysUserMapper;
 import com.mszlu.blog.dao.pojo.SysUser;
 import com.mszlu.blog.service.LoginService;
 import com.mszlu.blog.service.SysUserService;
-import com.mszlu.blog.vo.ErrorCode;
+import com.mszlu.blog.vo.ResultCode;
 import com.mszlu.blog.vo.LoginUserVo;
 import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.UserVo;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -75,7 +73,7 @@ public class SysUserServiceImpl implements SysUserService {
         * */
         SysUser sysUser = loginService.checkToken(token);
         if (sysUser == null) {
-            return Result.fail(ErrorCode.TOKEN_ERROR.getCode(), ErrorCode.TOKEN_ERROR.getMsg());
+            return Result.fail(ResultCode.TOKEN_ERROR.getCode(), ResultCode.TOKEN_ERROR.getMsg());
         }
         LoginUserVo loginUserVo = new LoginUserVo();
         loginUserVo.setId(String.valueOf(sysUser.getId()));

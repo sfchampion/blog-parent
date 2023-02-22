@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.mszlu.blog.dao.pojo.SysUser;
 import com.mszlu.blog.service.LoginService;
 import com.mszlu.blog.utils.UserThreadLocal;
-import com.mszlu.blog.vo.ErrorCode;
+import com.mszlu.blog.vo.ResultCode;
 import com.mszlu.blog.vo.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,14 +50,14 @@ public class LoginInterceptor implements HandlerInterceptor {
         log.info("=================request end===========================");
 
         if (StringUtils.isBlank(token)) {
-            Result result = Result.fail(ErrorCode.NO_LOGIN.getCode(), ErrorCode.NO_LOGIN.getMsg());
+            Result result = Result.fail(ResultCode.NO_LOGIN.getCode(), ResultCode.NO_LOGIN.getMsg());
             response.setContentType("application/json;charset=utf-8");
             response.getWriter().print(JSON.toJSONString(result));
             return false;
         }
         SysUser sysUser = loginService.checkToken(token);
         if (sysUser == null) {
-            Result result = Result.fail(ErrorCode.NO_LOGIN.getCode(), ErrorCode.NO_LOGIN.getMsg());
+            Result result = Result.fail(ResultCode.NO_LOGIN.getCode(), ResultCode.NO_LOGIN.getMsg());
             response.setContentType("application/json;charset=utf-8");
             response.getWriter().print(JSON.toJSONString(result));
             return false;

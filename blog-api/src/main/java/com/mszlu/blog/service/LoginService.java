@@ -1,8 +1,11 @@
 package com.mszlu.blog.service;
 
 import com.mszlu.blog.dao.pojo.SysUser;
+import com.mszlu.blog.vo.LoginVo;
 import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.params.LoginParam;
+
+import java.util.Map;
 
 /**
  * @author sfChampion
@@ -37,4 +40,11 @@ public interface LoginService {
      * @return
      */
     Result register(LoginParam loginParam);
+
+    /**
+     * 手机登录
+     * @param loginVo
+     * @return
+     */
+    Map<String, Object> phoneLoginUser(LoginVo loginVo);
 }

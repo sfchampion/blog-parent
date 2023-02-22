@@ -1,7 +1,7 @@
 package com.mszlu.blog.controller;
 
 import com.mszlu.blog.utils.QiniuUtils;
-import com.mszlu.blog.vo.ErrorCode;
+import com.mszlu.blog.vo.ResultCode;
 import com.mszlu.blog.vo.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +40,7 @@ public class UploadController {
         if (upload) {
             return Result.success(QiniuUtils.url + fileName);
         } else {
-            return Result.fail(ErrorCode.UPLOAD_FAIL.getCode(), ErrorCode.UPLOAD_FAIL.getMsg());
+            return Result.fail(ResultCode.UPLOAD_FAIL.getCode(), ResultCode.UPLOAD_FAIL.getMsg());
         }
     }
 }
