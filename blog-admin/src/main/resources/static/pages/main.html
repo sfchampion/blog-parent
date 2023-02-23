@@ -4,9 +4,9 @@
     <!-- 页面meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>码神之路博客管理后台</title>
-    <meta name="description" content="码神之路博客管理后台">
-    <meta name="keywords" content="码神之路博客管理后台">
+    <title>sfChampion博客管理后台</title>
+    <meta name="description" content="sfChampion博客管理后台">
+    <meta name="keywords" content="sfChampion博客管理后台">
     <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
     <!-- 引入样式 -->
     <link rel="stylesheet" href="../plugins/elementui/index.css">
@@ -21,6 +21,9 @@
         right: 10px;
         padding: 0;
     }
+    .logo-lg{
+        color: darkgreen;
+    }
     </style>
 </head>
 <body class="hold-transition skin-purple sidebar-mini">
@@ -30,7 +33,7 @@
                 <nav class="navbar navbar-static-top" :class=''>
                     <!-- Logo -->
                     <a href="#" class="logo" style="text-align:center">
-                        <span class="logo-lg">码神之路博客管理后台</span>
+                        <b><span class="logo-lg">sfChampion博客管理后台</span></b>
                     </a>
                     <div class="right-menu">
                         <span class="help"><i class="fa fa-exclamation-circle" aria-hidden="true"></i>帮助</span>
@@ -68,7 +71,7 @@
                     </el-menu>
                 </el-aside>
                 <el-container>
-                    <iframe name="right" class="el-main" src="permission.html" width="100%" height="800px" frameborder="0"></iframe>
+                    <iframe name="right" class="el-main" src="welcome.html" width="100%" height="800px" frameborder="0"></iframe>
                 </el-container>
             </el-container>
         </el-container>
@@ -95,21 +98,72 @@
             menuList:[
                 {
                     "path": "1",
-                    "title": "权限管理",
+                    "title": "后台首页",
                     "icon":"fa-user-md",
                     "children": [
                         {
                             "path": "/1-1",
-                            "title": "用户管理",
-                            "linkUrl":"admin.html",
+                            "title": "首页",
+                            "linkUrl":"welcome.html",
+                            "children":[]
+                        }
+                    ]
+                },
+                {
+                    "path": "2",
+                    "title": "首页管理",
+                    "icon":"fa-user-md",
+                    "children": [
+                        {
+                            "path": "/2-1",
+                            "title": "文章管理",
+                            "linkUrl":"articleman.html",
                             "children":[]
                         },
                         {
-                            "path": "/1-2",
+                            "path": "/2-2",
+                            "title": "种类管理",
+                            "linkUrl":"categoryman.html",
+                            "children":[]
+                        },
+                        {
+                            "path": "/2-3",
+                            "title": "标签管理",
+                            "linkUrl":"tagman.html",
+                            "children":[]
+                        },
+                    ]
+                },
+                {
+                    "path": "3",
+                    "title": "用户权限管理",
+                    "icon":"fa-user-md",
+                    "children": [
+                        {
+                            "path": "/3-1",
+                            "title": "用户管理",
+                            "linkUrl":"userman.html",
+                            "children":[]
+                        },
+                        {
+                            "path": "/3-2",
                             "title": "权限管理",
                             "linkUrl":"permission.html",
                             "children":[]
                         },
+                    ]
+                },
+                {
+                    "path": "4",
+                    "title": "留言管理",
+                    "icon":"fa-user-md",
+                    "children": [
+                        {
+                            "path": "/4-1",
+                            "title": "留言管理",
+                            "linkUrl":"commentman.html",
+                            "children":[]
+                        }
                     ]
                 },
             ]
