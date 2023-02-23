@@ -256,7 +256,7 @@ public class ArticleServiceImpl implements ArticleService {
             SysUser sysUser = sysUserService.findUserById(authorId);
             UserVo userVo = new UserVo();
             userVo.setAvatar(sysUser.getAvatar());
-            userVo.setId(sysUser.getId().toString());
+            userVo.setId(String.valueOf(sysUser.getId()));
             userVo.setNickname(sysUser.getNickname());
             articleVo.setAuthor(userVo);
         }
