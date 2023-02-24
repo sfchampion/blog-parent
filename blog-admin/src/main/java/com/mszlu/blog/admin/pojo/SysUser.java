@@ -21,13 +21,13 @@ public class SysUser {
 
     private String avatar;
 
-    private Long createDate;
+    private String createDate;
 
     private Integer deleted;
 
     private String email;
 
-    private Long lastLogin;
+    //private String lastLogin;
 
     private String mobilePhoneNumber;
 

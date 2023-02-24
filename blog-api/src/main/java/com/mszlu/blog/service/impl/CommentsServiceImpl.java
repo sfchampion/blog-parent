@@ -19,7 +19,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,12 +59,15 @@ public class CommentsServiceImpl implements CommentsService {
 
     @Override
     public Result comment(CommentParam commentParam) {
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
+        String format = dateFormat.format(date);
         SysUser sysUser = UserThreadLocal.get();
         Comment comment = new Comment();
         comment.setArticleId(commentParam.getArticleId());
         comment.setAuthorId(sysUser.getId());
         comment.setContent(commentParam.getContent());
-        comment.setCreateDate(System.currentTimeMillis());
+        comment.setCreateDate(format);
         Long parent = commentParam.getParent();
         if (parent == null || parent == 0) {
             comment.setLevel(1);

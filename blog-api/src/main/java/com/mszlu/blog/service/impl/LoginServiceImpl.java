@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -101,6 +103,9 @@ public class LoginServiceImpl implements LoginService {
         String account = loginParam.getAccount();
         String password = loginParam.getPassword();
         String nickname = loginParam.getNickname();
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
+        String format = dateFormat.format(date);
         if (StringUtils.isBlank(account)
                 || StringUtils.isBlank(password)
                 || StringUtils.isBlank(nickname)
@@ -115,8 +120,8 @@ public class LoginServiceImpl implements LoginService {
         sysUser.setNickname(nickname);
         sysUser.setAccount(account);
         sysUser.setPassword(DigestUtils.md5Hex(password + slat));
-        sysUser.setCreateDate(System.currentTimeMillis());
-        sysUser.setLastLogin(System.currentTimeMillis());
+        sysUser.setCreateDate(format);
+        //sysUser.setLastLogin(format);
         //sysUser.setAvatar("/static/img/logo.b3a48c0.png");
         sysUser.setAvatar("/static/img/f.jpg");
         sysUser.setAdmin(1); // 1 为true
@@ -152,6 +157,9 @@ public class LoginServiceImpl implements LoginService {
         if (!code.equals(redisCode)) {
             throw  new BlogException(ResultCode.CODE_ERROR.getMsg(),ResultCode.CODE_ERROR.getCode());
         }
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
+        String format = dateFormat.format(date);
         SysUser sysUserPhone = null;
         if (sysUserPhone == null) {
             // 判断是否是第一次登录，根据手机号查询数据库，如果不存在相同手机号，就是第一次登录
@@ -162,9 +170,12 @@ public class LoginServiceImpl implements LoginService {
             if (sysUserPhone == null) {
                 // 将用户信息添加到数据库
                 sysUserPhone = new SysUser();
-                sysUserPhone.setAccount(sysUserPhone.getMobilePhoneNumber().substring(7));
                 sysUserPhone.setMobilePhoneNumber(mobilePhoneNumber);
-                sysUserPhone.setAvatar("/static/img/f.jpg");
+                sysUserPhone.setAccount(sysUserPhone.getMobilePhoneNumber());
+                sysUserPhone.setNickname(sysUserPhone.getMobilePhoneNumber().substring(7));
+                sysUserPhone.setAvatar("/static/img/s.jpg");
+                sysUserPhone.setCreateDate(format);
+                //sysUserPhone.setLastLogin(format);
                 loginMapper.insert(sysUserPhone);
             }
         }
@@ -182,7 +193,7 @@ public class LoginServiceImpl implements LoginService {
         //    phoneNumber = sysUserPhone.getMobilePhoneNumber();
         //}
         map.put("phoneNumber", phoneNumber);
-        map.put("account", sysUserPhone.getMobilePhoneNumber().substring(7));
+        map.put("account", sysUserPhone.getMobilePhoneNumber());
         map.put("avatar", sysUserPhone.getAvatar());
         // jwt生成token字符串
         String token = JWTUtils.createToken(sysUserPhone.getMobilePhoneNumber());

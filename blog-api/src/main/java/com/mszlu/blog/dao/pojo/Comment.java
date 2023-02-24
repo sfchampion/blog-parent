@@ -2,6 +2,7 @@ package com.mszlu.blog.dao.pojo;
 
 import lombok.Data;
 
+
 /**
  * @author sfChampion
  */
@@ -12,7 +13,7 @@ public class Comment {
 
     private String content;
 
-    private Long createDate;
+    private String createDate;
 
     private Long articleId;
 

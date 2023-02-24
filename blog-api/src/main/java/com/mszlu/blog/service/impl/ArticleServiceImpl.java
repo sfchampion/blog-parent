@@ -23,10 +23,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author sfChampion
@@ -161,6 +159,9 @@ public class ArticleServiceImpl implements ArticleService {
          * */
         Article article = new Article();
         boolean isEdit = false;
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
+        String format = dateFormat.format(date);
         if (articleParam.getId() != null){
             article = new Article();
             article.setId(articleParam.getId());
@@ -177,7 +178,7 @@ public class ArticleServiceImpl implements ArticleService {
             article.setTitle(articleParam.getTitle());
             article.setSummary(articleParam.getSummary());
             article.setCommentCounts(0);
-            article.setCreateDate(System.currentTimeMillis());
+            article.setCreateDate(format);
             article.setCategoryId(Long.parseLong(articleParam.getCategory().getId()));
             //插入之后 会生成一个文章id
             this.articleMapper.insert(article);
@@ -245,7 +246,10 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleVo articleVo = new ArticleVo();
         articleVo.setId(String.valueOf(article.getId()));
         BeanUtils.copyProperties(article, articleVo);
-        articleVo.setCreateDate(new DateTime(article.getCreateDate()).toString("yyyy-MM-dd HH:mm"));
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
+        String format = dateFormat.format(date);
+        articleVo.setCreateDate(format);
         // 并不是所有的接口 都需要标签，作者信息
         if (isTag) {
             Long articleId = article.getId();

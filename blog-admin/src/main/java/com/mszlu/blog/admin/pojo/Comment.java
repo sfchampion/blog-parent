@@ -12,15 +12,15 @@ public class Comment {
 
     private String content;
 
-    private Long createDate;
+    private String createDate;
 
-    private Long articleId;
+    private String articleId;
 
-    private Long authorId;
+    private String authorId;
 
-    private Long parentId;
+    private String parentId;
 
-    private Long toUid;
+    private String toUid;
 
     private Integer level;
 }
