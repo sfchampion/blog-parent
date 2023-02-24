@@ -13,18 +13,18 @@ import javax.annotation.Resource;
  */
 
 @RestController
-@RequestMapping("/articles")
+@RequestMapping("articles")
 public class ArticleManController {
 
     @Resource
     private ArticleManService articleManService;
 
-    @PostMapping("/articleList")
+    @PostMapping("articleList")
     public Result articleList(@RequestBody PageParam pageParam){
         return articleManService.articleList(pageParam);
     }
 
-    @GetMapping("/articleDelete/{id}")
+    @GetMapping("articleDelete/{id}")
     public Result articleDetail(@PathVariable("id") Long id){
         return articleManService.deleteArticle(id);
     }

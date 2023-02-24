@@ -13,7 +13,7 @@ public class Article {
 
     public static final int Article_Common = 0;
 
-    private Long id;
+    private String id;
 
     private String title;
 
@@ -26,11 +26,11 @@ public class Article {
     /**
      * 作者id
      */
-    private Long authorId;
+    private String authorId;
     /**
      * 内容id
      */
-    private Long bodyId;
+    private String bodyId;
     /**
      *类别id
      */
