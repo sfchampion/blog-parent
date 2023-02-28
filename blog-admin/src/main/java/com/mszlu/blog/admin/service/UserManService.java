@@ -46,4 +46,9 @@ public class UserManService {
         this.userManMapper.deleteById(id);
         return Result.success(null);
     }
+
+    public Result updateUser(SysUser sysUser) {
+        this.userManMapper.updateById(sysUser);
+        return Result.success(null);
+    }
 }

@@ -1,6 +1,8 @@
 package com.mszlu.blog.admin.controller;
 
 import com.mszlu.blog.admin.model.params.PageParam;
+import com.mszlu.blog.admin.pojo.Permission;
+import com.mszlu.blog.admin.pojo.SysUser;
 import com.mszlu.blog.admin.service.UserManService;
 import com.mszlu.blog.admin.vo.Result;
 import org.springframework.web.bind.annotation.*;
@@ -27,5 +29,10 @@ public class UserManController {
     @GetMapping("delete/{id}")
     public Result deleteUser(@PathVariable("id") Long id) {
         return userManService.deleteUser(id);
+    }
+
+    @PostMapping("updateUser")
+    public Result updateUser(@RequestBody SysUser sysUser){
+        return userManService.updateUser(sysUser);
     }
 }

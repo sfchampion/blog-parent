@@ -42,7 +42,7 @@
 <!--                        <el-button type="primary" class="butT" @click="handleCreate()">新建用户</el-button>-->
                     </div>
                     <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
-                        <el-table-column  align="center" label="序号" prop="id"></el-table-column>
+<!--                        <el-table-column  align="center" label="序号" prop="id"></el-table-column>-->
                         <el-table-column label="编号" align="center" prop="id">
                         </el-table-column>
                         <el-table-column label="名称" align="center" prop="account">
@@ -65,13 +65,13 @@
                         </el-table-column>
                         <el-table-column label="密码" align="center" prop="password">
                         </el-table-column>
-                        <el-table-column label="加密盐" align="center" prop="salt">
-                        </el-table-column>
+<!--                        <el-table-column label="加密盐" align="center" prop="salt">-->
+<!--                        </el-table-column>-->
                         <el-table-column label="状态" align="center" prop="status">
                         </el-table-column>
                         <el-table-column label="操作" align="center">
                             <template slot-scope="scope">
-<!--                                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>-->
+                                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
                                 <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -120,16 +120,16 @@
                     </div>
 
                     <!-- 编辑标签弹层 -->
-<!--                    <div class="add-form">-->
-<!--                        <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit">-->
-<!--                            <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right" label-width="100px">-->
-<!--                                <el-row>-->
-<!--                                    <el-col >-->
-<!--                                        <el-form-item label="名称" prop="name">-->
-<!--                                            <el-input  v-model="formData.name"/>-->
-<!--                                        </el-form-item>-->
-<!--                                    </el-col>-->
-<!--                                </el-row>-->
+                    <div class="add-form">
+                        <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit">
+                            <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right" label-width="100px">
+                                <el-row>
+                                    <el-col >
+                                        <el-form-item label="状态" prop="status">
+                                            <el-input  v-model="formData.status"/>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
 <!--                                <el-row>-->
 <!--                                    <el-col >-->
 <!--                                        <el-form-item label="路径" prop="path">-->
@@ -144,13 +144,13 @@
 <!--                                        </el-form-item>-->
 <!--                                    </el-col>-->
 <!--                                </el-row>-->
-<!--                            </el-form>-->
-<!--                            <div slot="footer" class="dialog-footer">-->
-<!--                                <el-button @click="dialogFormVisibleEdit = false">取消</el-button>-->
-<!--                                <el-button type="primary" @click="handleEdit()">确定</el-button>-->
-<!--                            </div>-->
-<!--                        </el-dialog>-->
-<!--                    </div>-->
+                            </el-form>
+                            <div slot="footer" class="dialog-footer">
+                                <el-button @click="dialogFormVisibleEdit = false">取消</el-button>
+                                <el-button type="primary" @click="handleEdit()">确定</el-button>
+                            </div>
+                        </el-dialog>
+                    </div>
                 </div>
             </div>
         </div>
@@ -207,10 +207,11 @@
                 },//表单数据
                 dialogFormVisible: false,//增加表单是否可见
                 dialogFormVisibleEdit:false,
-                /*rules: {//校验规则
-                    name: [{ required: true, message: '必填项', trigger: 'blur' }],
-                    path: [{ required: true, message: '必填项', trigger: 'blur' }],
-                }*/
+                rules: {//校验规则
+                    // name: [{ required: true, message: '必填项', trigger: 'blur' }],
+                    // path: [{ required: true, message: '必填项', trigger: 'blur' }],
+                    status: [{ required: true, message: '必填项', trigger: 'blur' }],
+                }
 
             },
             //钩子函数，VUE对象初始化完成后自动执行
@@ -225,22 +226,22 @@
 
                 },
                 //编辑
-                // handleEdit() {
-                //     axios.post("/admin/permission/update",this.formData).then((res)=>{
-                //         if (res.data.success){
-                //             this.$message({
-                //                 message: '恭喜你，编辑成功',
-                //                 type: 'success'
-                //             });
-                //             this.dialogFormVisibleEdit = false;
-                //             this.findPage();
-                //         }
-                //     }).catch((error)=>{
-                //         if (error == "Error: Request failed with status code 403"){
-                //             this.$message.error("无操作权限");
-                //         }
-                //     });
-                // },
+                handleEdit() {
+                    axios.post("/userMan/updateUser",this.formData).then((res)=>{
+                        if (res.data.success){
+                            this.$message({
+                                message: '恭喜你，编辑成功',
+                                type: 'success'
+                            });
+                            this.dialogFormVisibleEdit = false;
+                            this.findPage();
+                        }
+                    }).catch((error)=>{
+                        if (error == "Error: Request failed with status code 403"){
+                            this.$message.error("无操作权限");
+                        }
+                    });
+                },
                 //添加
                 // handleAdd () {
                 //     axios.post("/admin/permission/add",this.formData).then((res)=>{
@@ -276,22 +277,22 @@
                     });
                 },
                 // 重置表单
-                /*resetForm() {
+                resetForm() {
                     this.formData = {};
                     this.subjects = [];
                     this.tableData = {};
-                },*/
+                },
                 // 弹出添加窗口
                 /*handleCreate() {
                     this.resetForm();
                     this.dialogFormVisible = true;
                 },*/
                 // 弹出编辑窗口
-                /*handleUpdate(row) {
+                handleUpdate(row) {
                     this.resetForm();
                     this.dialogFormVisibleEdit = true;
                     this.formData = row;
-                },*/
+                },
                 //切换页码
                 handleCurrentChange(currentPage) {
                     this.pagination.currentPage = currentPage;
