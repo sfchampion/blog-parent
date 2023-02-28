@@ -58,7 +58,7 @@ public class SysUserServiceImpl implements SysUserService {
         LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysUser::getAccount,account);
         queryWrapper.eq(SysUser::getPassword,password);
-        queryWrapper.select(SysUser::getAccount,SysUser::getId,SysUser::getAvatar,SysUser::getNickname);
+        queryWrapper.select(SysUser::getAccount,SysUser::getId,SysUser::getAvatar,SysUser::getNickname,SysUser::getStatus);
         queryWrapper.last("limit 1");
         return sysUserMapper.selectOne(queryWrapper);
     }

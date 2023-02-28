@@ -12,6 +12,7 @@ public enum ResultCode {
     UPLOAD_FAIL(10005,"上传失败"),
     CODE_ERROR(10006,"验证码错误"),
     SENDING_SMS_FAIL(10007,"发送短信失败"),
+    DISABLE_USER_LOGIN(10008,"禁止用户登录"),
     NO_PERMISSION(70001,"无访问权限"),
     SESSION_TIME_OUT(90001,"会话超时"),
     NO_LOGIN(90002,"未登录"),;

@@ -40,7 +40,9 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     private RedisTemplate<String, String> redisTemplate;
 
-    private static final String slat = "mszlu!@#";
+    private static final String SLAT = "mszlu!@#";
+
+    private String deny = "0";
 
     @Override
     public Result login(LoginParam loginParam) {
@@ -57,8 +59,11 @@ public class LoginServiceImpl implements LoginService {
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
             return Result.fail(ResultCode.PARAMS_ERROR.getCode(), ResultCode.PARAMS_ERROR.getMsg());
         }
-        password = DigestUtils.md5Hex(password + slat);
+        password = DigestUtils.md5Hex(password + SLAT);
         SysUser sysUser = sysUserService.findUser(account, password);
+        if (sysUser.getStatus().equals(deny)){
+            return Result.fail(ResultCode.DISABLE_USER_LOGIN.getCode(), ResultCode.DISABLE_USER_LOGIN.getMsg());
+        }
         if (sysUser == null) {
             return Result.fail(ResultCode.ACCOUNT_PWD_NOT_EXIST.getCode(), ResultCode.ACCOUNT_PWD_NOT_EXIST.getMsg());
         }
@@ -119,15 +124,15 @@ public class LoginServiceImpl implements LoginService {
         sysUser = new SysUser();
         sysUser.setNickname(nickname);
         sysUser.setAccount(account);
-        sysUser.setPassword(DigestUtils.md5Hex(password + slat));
+        sysUser.setPassword(DigestUtils.md5Hex(password + SLAT));
         sysUser.setCreateDate(format);
         //sysUser.setLastLogin(format);
         //sysUser.setAvatar("/static/img/logo.b3a48c0.png");
         sysUser.setAvatar("/static/img/f.jpg");
         sysUser.setAdmin(1); // 1 为true
         sysUser.setDeleted(0); // 0 为false
-        sysUser.setSalt("");
-        sysUser.setStatus("");
+        sysUser.setSalt("mszlu!@#");
+        sysUser.setStatus("1");
         sysUser.setEmail("");
         this.sysUserService.save(sysUser);
 
@@ -155,7 +160,7 @@ public class LoginServiceImpl implements LoginService {
         // 判断手机验证码和输入的验证码是否一致
         String redisCode = redisTemplate.opsForValue().get(mobilePhoneNumber);
         if (!code.equals(redisCode)) {
-            throw  new BlogException(ResultCode.CODE_ERROR.getMsg(),ResultCode.CODE_ERROR.getCode());
+            throw new BlogException(ResultCode.CODE_ERROR.getMsg(),ResultCode.CODE_ERROR.getCode());
         }
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
@@ -174,6 +179,7 @@ public class LoginServiceImpl implements LoginService {
                 sysUserPhone.setAccount(sysUserPhone.getMobilePhoneNumber());
                 sysUserPhone.setNickname(sysUserPhone.getMobilePhoneNumber().substring(7));
                 sysUserPhone.setAvatar("/static/img/s.jpg");
+                sysUserPhone.setStatus("1");
                 sysUserPhone.setCreateDate(format);
                 //sysUserPhone.setLastLogin(format);
                 loginMapper.insert(sysUserPhone);
@@ -192,6 +198,9 @@ public class LoginServiceImpl implements LoginService {
         //if (StringUtils.isEmpty(phoneNumber)) {
         //    phoneNumber = sysUserPhone.getMobilePhoneNumber();
         //}
+        if (sysUserPhone.getStatus().equals(deny)){
+            throw new BlogException(ResultCode.DISABLE_USER_LOGIN.getMsg(),ResultCode.DISABLE_USER_LOGIN.getCode());
+        }
         map.put("phoneNumber", phoneNumber);
         map.put("account", sysUserPhone.getMobilePhoneNumber());
         map.put("avatar", sysUserPhone.getAvatar());
