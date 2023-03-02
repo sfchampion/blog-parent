@@ -40,7 +40,7 @@ public interface SysUserService {
     Result findUserByToken(String token);
 
     /**
-     * 根据账户查找用户
+     * 根据用户名查找用户
      * @param account
      * @return
      */

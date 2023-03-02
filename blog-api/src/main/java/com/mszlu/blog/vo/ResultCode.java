@@ -5,7 +5,7 @@ package com.mszlu.blog.vo;
  * @date 2023/2/8 14:43
  */
 public enum ResultCode {
-    PARAMS_ERROR(10001,"参数有误"),
+    PARAMS_ERROR(10001,"用户名或密码为空"),
     ACCOUNT_PWD_NOT_EXIST(10002,"用户名或密码不存在"),
     TOKEN_ERROR(10003,"token不合法"),
     ACCOUNT_EXIST(10004,"账号已存在"),
@@ -13,6 +13,9 @@ public enum ResultCode {
     CODE_ERROR(10006,"验证码错误"),
     SENDING_SMS_FAIL(10007,"发送短信失败"),
     DISABLE_USER_LOGIN(10008,"禁止用户登录"),
+    PASSWORD_FORMAT_ERROR(10009,"密码格式错误"),
+    PASSWORD_ERROR(20001,"密码错误，你一共有三次登录机会"),
+    ACCOUNT_HAS_BEEN_LOCKED(20002,"账号已被锁定"),
     NO_PERMISSION(70001,"无访问权限"),
     SESSION_TIME_OUT(90001,"会话超时"),
     NO_LOGIN(90002,"未登录"),;

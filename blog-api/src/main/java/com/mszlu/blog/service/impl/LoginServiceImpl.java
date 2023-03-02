@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,10 +43,11 @@ public class LoginServiceImpl implements LoginService {
 
     private static final String SLAT = "mszlu!@#";
 
-    private String deny = "0";
+    private static final String DENY = "0";
+
 
     @Override
-    public Result login(LoginParam loginParam) {
+    public Result login(LoginParam loginParam, HttpSession session) {
         /*
          * 1.检查参数是否合法
          * 2.根据用户名和密码去user表中查询，是否存在
@@ -56,12 +58,23 @@ public class LoginServiceImpl implements LoginService {
          * */
         String account = loginParam.getAccount();
         String password = loginParam.getPassword();
+        if(!checkLock(session, account)) {
+            return Result.fail(ResultCode.ACCOUNT_HAS_BEEN_LOCKED.getCode(), ResultCode.ACCOUNT_HAS_BEEN_LOCKED.getMsg());
+        }
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
             return Result.fail(ResultCode.PARAMS_ERROR.getCode(), ResultCode.PARAMS_ERROR.getMsg());
         }
+        SysUser userByAccount = sysUserService.findUserByAccount(account);
         password = DigestUtils.md5Hex(password + SLAT);
+        if(!password.equals(userByAccount.getPassword())) {
+            //新增登录失败记录
+            addFailNum(session, account);
+            return Result.fail(ResultCode.PASSWORD_ERROR.getCode(), ResultCode.PASSWORD_ERROR.getMsg());
+        }
+        //清空登录失败记录
+        cleanFailNum(session, account);
         SysUser sysUser = sysUserService.findUser(account, password);
-        if (sysUser.getStatus().equals(deny)){
+        if (sysUser.getStatus().equals(DENY)){
             return Result.fail(ResultCode.DISABLE_USER_LOGIN.getCode(), ResultCode.DISABLE_USER_LOGIN.getMsg());
         }
         if (sysUser == null) {
@@ -70,6 +83,59 @@ public class LoginServiceImpl implements LoginService {
         String token = JWTUtils.createToken(sysUser.getId());
         redisTemplate.opsForValue().set("TOKEN_" + token, JSON.toJSONString(sysUser), 1, TimeUnit.DAYS);
         return Result.success(token);
+    }
+
+    /**
+     * 校验用户登录失败次数
+     * @param session
+     * @param account
+     * @return
+     */
+    public boolean checkLock(HttpSession session,String account) {
+        Object o = session.getServletContext().getAttribute(account);
+        if(o==null) {
+            return true;
+        }
+        HashMap<String,Object> map  = (HashMap<String, Object>) o;
+        int num  = (int) map.get("num");
+        Date date = (Date) map.get("lastDate");
+        long timeDifference = ((new Date().getTime()-date.getTime())/60/1000);
+        if(num>=3&&timeDifference<30) {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * 新增用户登录失败次数
+     * @param session
+     * @param account
+     */
+    public void addFailNum(HttpSession session, String account) {
+        Object o = session.getServletContext().getAttribute(account);
+        HashMap<String,Object> map = null;
+        int num= 0;
+        if(o==null) {
+            map = new HashMap<String,Object>();
+        }else {
+            map  = (HashMap<String, Object>) o;
+            num  = (int) map.get("num");
+            Date date = (Date) map.get("lastDate");
+            long timeDifference = ((new Date().getTime()-date.getTime())/60/1000);
+            if(timeDifference>=30) {
+                num=0;
+            }
+        }
+        map.put("num", num+1);
+        map.put("lastDate", new Date());
+        session.getServletContext().setAttribute(account, map);
+    }
+    /**
+     * 清理用户登录失败的记录
+     * @param session
+     * @param account
+     */
+    public void cleanFailNum(HttpSession session, String account) {
+        session.getServletContext().removeAttribute(account);
     }
 
     @Override
@@ -108,6 +174,7 @@ public class LoginServiceImpl implements LoginService {
         String account = loginParam.getAccount();
         String password = loginParam.getPassword();
         String nickname = loginParam.getNickname();
+        String regex = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$";
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
         String format = dateFormat.format(date);
@@ -116,6 +183,10 @@ public class LoginServiceImpl implements LoginService {
                 || StringUtils.isBlank(nickname)
         ) {
             return Result.fail(ResultCode.PARAMS_ERROR.getCode(), ResultCode.PARAMS_ERROR.getMsg());
+        }
+        boolean matches = password.matches(regex);
+        if (!matches) {
+            return Result.fail(ResultCode.PASSWORD_FORMAT_ERROR.getCode(), ResultCode.PASSWORD_FORMAT_ERROR.getMsg());
         }
         SysUser sysUser = sysUserService.findUserByAccount(account);
         if (sysUser != null) {
@@ -198,7 +269,7 @@ public class LoginServiceImpl implements LoginService {
         //if (StringUtils.isEmpty(phoneNumber)) {
         //    phoneNumber = sysUserPhone.getMobilePhoneNumber();
         //}
-        if (sysUserPhone.getStatus().equals(deny)){
+        if (sysUserPhone.getStatus().equals(DENY)){
             throw new BlogException(ResultCode.DISABLE_USER_LOGIN.getMsg(),ResultCode.DISABLE_USER_LOGIN.getCode());
         }
         map.put("phoneNumber", phoneNumber);

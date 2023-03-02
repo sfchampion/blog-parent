@@ -5,6 +5,7 @@ import com.mszlu.blog.vo.LoginVo;
 import com.mszlu.blog.vo.Result;
 import com.mszlu.blog.vo.params.LoginParam;
 
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -16,9 +17,10 @@ public interface LoginService {
     /**
      * 登录功能
      * @param loginParam
+     * @param session
      * @return
      */
-    Result login(LoginParam loginParam);
+    Result login(LoginParam loginParam, HttpSession session);
 
     /**
      * 检查token

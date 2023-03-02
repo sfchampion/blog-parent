@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -25,9 +26,9 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping
-    public Result login(@RequestBody LoginParam loginParam) {
+    public Result login(@RequestBody LoginParam loginParam, HttpSession session) {
         // 登录 验证用户 访问用户表
-        return loginService.login(loginParam);
+        return loginService.login(loginParam,session);
     }
 
     @PostMapping("PhoneLogin")
