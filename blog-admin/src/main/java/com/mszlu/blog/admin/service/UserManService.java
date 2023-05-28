@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mszlu.blog.admin.mapper.UserManMapper;
 import com.mszlu.blog.admin.model.params.PageParam;
+import com.mszlu.blog.admin.pojo.Manager;
 import com.mszlu.blog.admin.pojo.Permission;
 import com.mszlu.blog.admin.pojo.SysUser;
 import com.mszlu.blog.admin.vo.PageResult;
@@ -30,13 +31,13 @@ public class UserManService {
          * 要的数据，管理台，表的所有的字段 Permission
          * 分页查询
          * */
-        Page<SysUser> page = new Page<>(pageParam.getCurrentPage(), pageParam.getPageSize());
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        Page<Manager> page = new Page<>(pageParam.getCurrentPage(), pageParam.getPageSize());
+        LambdaQueryWrapper<Manager> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.isNotBlank(pageParam.getQueryString())) {
-            queryWrapper.like(SysUser::getAccount,pageParam.getQueryString());
+            queryWrapper.like(Manager::getUserId,pageParam.getQueryString());
         }
-        Page<SysUser> userManPage = userManMapper.selectPage(page, queryWrapper);
-        PageResult<SysUser> pageResult = new PageResult<>();
+        Page<Manager> userManPage = userManMapper.selectPage(page, queryWrapper);
+        PageResult<Manager> pageResult = new PageResult<>();
         pageResult.setList(userManPage.getRecords());
         pageResult.setTotal(userManPage.getTotal());
         return Result.success(pageResult);
@@ -47,8 +48,8 @@ public class UserManService {
         return Result.success(null);
     }
 
-    public Result updateUser(SysUser sysUser) {
-        this.userManMapper.updateById(sysUser);
+    public Result updateUser(Manager Manager) {
+        this.userManMapper.updateById(Manager);
         return Result.success(null);
     }
 }

@@ -1,6 +1,7 @@
 package com.mszlu.blog.admin.controller;
 
 import com.mszlu.blog.admin.model.params.PageParam;
+import com.mszlu.blog.admin.pojo.Manager;
 import com.mszlu.blog.admin.pojo.Permission;
 import com.mszlu.blog.admin.pojo.SysUser;
 import com.mszlu.blog.admin.service.UserManService;
@@ -32,7 +33,7 @@ public class UserManController {
     }
 
     @PostMapping("updateUser")
-    public Result updateUser(@RequestBody SysUser sysUser){
-        return userManService.updateUser(sysUser);
+    public Result updateUser(@RequestBody Manager manager){
+        return userManService.updateUser(manager);
     }
 }
